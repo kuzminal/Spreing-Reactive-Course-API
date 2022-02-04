@@ -4,6 +4,7 @@ import com.kuzmin.api.model.Course;
 import com.kuzmin.api.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -22,6 +23,7 @@ public class CourseHandler {
         this.courseRepository = courseRepository;
     }
 
+    @PreAuthorize("hasRole('INVENTORY')")
     public Mono<ServerResponse> findAllCourses(ServerRequest serverRequest) {
         Flux<Course> courses = this.courseRepository.findAll();
         return ServerResponse.ok().contentType(APPLICATION_JSON).body(courses, Course.class);
@@ -62,6 +64,7 @@ public class CourseHandler {
                 .switchIfEmpty(notFound());
     }
 
+    @PreAuthorize("hasRole('INVENTORY')")
     public Mono<ServerResponse> deleteAllCourses(ServerRequest serverRequest) {
         return ServerResponse.ok().build(this.courseRepository.deleteAll());
     }
